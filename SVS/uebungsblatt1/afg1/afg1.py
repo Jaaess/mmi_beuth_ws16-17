@@ -29,7 +29,7 @@ random.shuffle(shuffled_abc)
 wb = dict(zip(abc, shuffled_abc))
 
 #Orginaltext aus Datei lesen
-fobj = open("text.txt")
+fobj = open('text.txt')
 getText = ""
 for line in fobj:
     getText += line.rstrip()
@@ -38,12 +38,14 @@ fobj.close()
 #Illegale Zeichen aus gelesenen Text entfernen
 transformedRealText = removeIllegalChars(getText, abc)
 print transformedRealText
+print
 
 #Text verschlüsseln
 cryptedText = ""
 for c in transformedRealText:
     cryptedText = cryptedText+wb[c]
 print cryptedText
+print
 
 # Entschlüsslungspart
 # Anzahl der der Häufigkeit der einzelnen Zeichen im legalem Zeichensatz ermitteln
@@ -59,6 +61,7 @@ countAbc = dict(zip(abc, countLetter))
 sortedCountAbc = sorted(countAbc.items(), key=operator.itemgetter(1))
 sortedCountAbc.reverse()
 print sortedCountAbc
+print
 
 #absteigende Reihenfolge mit legale Zeichensatz(englisch)
 aCountLetterEn = [" "]
@@ -82,10 +85,11 @@ for ch in cryptedText:
     decryptedText = decryptedText+cb[ch]
 
 print transformedRealText
+print
 print decryptedText
+print
 
 
 
 #http://www.mathe.tu-freiberg.de/~hebisch/cafe/kryptographie/bigramme.html
 #http://www.mathe.tu-freiberg.de/~hebisch/cafe/kryptographie/haeufigkeitstabellen.html
-
