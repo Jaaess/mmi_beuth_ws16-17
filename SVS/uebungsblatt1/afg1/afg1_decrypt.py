@@ -15,6 +15,17 @@ def getFrequencyOfACharInText(stringText,char):
     #return "Char: %c = %i " % (char, count)
     return count
 
+def replaceWords(encryptedWord, newWord, decryptedText):
+    i = 0
+    for oldChar in encryptedWord:
+        if oldChar != newWord[i]:
+            decryptedText = decryptedText.replace(newWord[i], ".")
+            tmp = oldChar
+            decryptedText = decryptedText.replace(oldChar, newWord[i])
+            decryptedText = decryptedText.replace(".", tmp)
+        i += 1
+    return decryptedText
+
 fobj = open("encryptedText.txt")
 cryptedText = ""
 for line in fobj:
@@ -23,7 +34,7 @@ fobj.close()
 
 abc = [chr(a+97) for a in range(26)] + [" "]
 
-# Entschlüsslungspart
+# Entschlüsslungspart 1
 # Anzahl der der Häufigkeit der einzelnen Zeichen im legalem Zeichensatz ermitteln
 i = 0
 countLetter = abc[:]
@@ -64,17 +75,60 @@ for ch in cryptedText:
 print decryptedText
 
 splittedDecryptedText = string.split(decryptedText, " ")
-#print splittedDecryptedText
 
-#Häufigstes Wort mit 3 Buchstaben ermitteln
+#Ermittlung der Häufigkeit Wörter mit EINEM Zeichen
 d = defaultdict(int)
 for w in decryptedText.split():
-    if len(w) >= 3:
+    if len(w) == 1:
+        d[w] += 1
+
+sortedFrequencyOneLetterWords = sorted(d.items(), key=operator.itemgetter(1))
+print sortedFrequencyOneLetterWords
+
+oneLetterWords = "ia"
+
+i = 0
+for oldChar in sortedFrequencyOneLetterWords:
+    oldChar = oldChar[0][0]
+    if oldChar != oneLetterWords[i]:
+            decryptedText = decryptedText.replace(oneLetterWords[i], ".")
+            tmp = oldChar
+            decryptedText = decryptedText.replace(oldChar, oneLetterWords[i])
+            decryptedText = decryptedText.replace(".", tmp)
+    i += 1
+print decryptedText
+
+#Häufigstes Wort mit 2 Buchstaben ermitteln
+d = defaultdict(int)
+for w in decryptedText.split():
+    if len(w) == 2:
         d[w] += 1
 
 sortedFrequencyThreeLetterWords = sorted(d.items(), key=operator.itemgetter(1))
 sortedFrequencyThreeLetterWords.reverse()
-print sortedFrequencyThreeLetterWords[0][0]
+
+mostFrequencyWordWithThreeLetter = "of"
+
+#Das häufigste Wort mit 3 Buchstaben mit "the" ersetzen
+i = 0
+for oldChar in sortedFrequencyThreeLetterWords[0][0]:
+    if oldChar != mostFrequencyWordWithThreeLetter[i]:
+            decryptedText = decryptedText.replace(mostFrequencyWordWithThreeLetter[i], ".")
+            tmp = oldChar
+            decryptedText = decryptedText.replace(oldChar, mostFrequencyWordWithThreeLetter[i])
+            decryptedText = decryptedText.replace(".", tmp)
+    i += 1
+#print decryptedText
+
+
+d = defaultdict(int)
+for w in decryptedText.split():
+    if len(w) == 3:
+        d[w] += 1
+
+sortedFrequencyThreeLetterWords = sorted(d.items(), key=operator.itemgetter(1))
+sortedFrequencyThreeLetterWords.reverse()
+#print sortedFrequencyThreeLetterWords[0][0]
 
 mostFrequencyWordWithThreeLetter = "the"
 
@@ -90,23 +144,89 @@ for oldChar in sortedFrequencyThreeLetterWords[0][0]:
 print decryptedText
 
 
-#Häufigstes Wort mit 2 Buchstaben ermitteln
+#Häufigstes Wort mit 5 Buchstaben ermitteln
 d = defaultdict(int)
 for w in decryptedText.split():
-    if len(w) >= 2:
+    if len(w) == 5:
         d[w] += 1
 
 sortedFrequencyThreeLetterWords = sorted(d.items(), key=operator.itemgetter(1))
-print sortedFrequencyThreeLetterWords.reverse()
-#print sortedFrequencyThreeLetterWords[0][0]
+sortedFrequencyThreeLetterWords.reverse()
+print sortedFrequencyThreeLetterWords
+print sortedFrequencyThreeLetterWords[0][0]
 
-mostFrequencyWordWithThreeLetter = "the"
+mostFrequencyWordWithThreeLetter = "which"
 
-"""j = 0
+#Das häufigste Wort mit 3 Buchstaben mit "wich" ersetzen
+i = 0
+for oldChar in sortedFrequencyThreeLetterWords[0][0]:
+    if oldChar != mostFrequencyWordWithThreeLetter[i]:
+            decryptedText = decryptedText.replace(mostFrequencyWordWithThreeLetter[i], ".")
+            tmp = oldChar
+            decryptedText = decryptedText.replace(oldChar, mostFrequencyWordWithThreeLetter[i])
+            decryptedText = decryptedText.replace(".", tmp)
+    i += 1
+print decryptedText
+
+splittedDecryptedText = string.split(decryptedText, " ")
+
+for token in splittedDecryptedText: #rekursion !!!!
+#token = "alwags"
+    print ">" + token
+    lenToken = len(token)
+    print lenToken
+    if lenToken >= 2 and lenToken <= 16:
+        fobj = open("dict/" + str(lenToken) + "top.txt")
+        foundWords = []
+        maxCharsForAccord = len(token)//3*2
+        for line in fobj:
+            dictWord = line.rstrip()
+            if set(dictWord) == set(token):
+                foundWords = []
+                foundWords.append(token)
+                break
+            if dictWord != token:
+                i = 0
+                count = 0
+                for char in token:
+                    if dictWord[i] == char:
+                       # print dictWord + ": " + dictWord[i]
+                        count += 1
+                    i += 1
+                if count >= maxCharsForAccord:
+                    foundWords.append(dictWord)
+        print foundWords
+        print replaceWords(token, foundWords[0], decryptedText)
+        splittedDecryptedText = string.split(decryptedText, " ")
+        fobj.close()
+
+print foundWords
+
+print replaceWords(token, foundWords[0], decryptedText)
+
+
+
+"""
+fobj = open("plainText2.txt")
+plainText = ""
+for line in fobj:
+     plainText += line.rstrip()
+fobj.close()
+"""
+
+#print cryptedText
+#print decryptedText
+#print plainText
+
+###################################################################################################
+
+"""
+j = 0
 for token in splittedDecryptedText:
 #for x in range(0, 10):
     #token = splittedDecryptedText[x]
-    print "token: " + token
+ #   print "token: " + token
+#token = 'holmes'
     en = enchant.Dict("en_EN")
     us = enchant.Dict("en_US")
     results_en = en.suggest(token)
@@ -126,24 +246,27 @@ for token in splittedDecryptedText:
         if hit:
             break
 
+
     print hitWord
     print hit
+
     if hit and len(hitWord) > 0:
-        print hit
+        if hitWord != token:
+            print hit
 
-        i = 0
-        for newChar in hitWord:
-            oldChar = splittedDecryptedText[j][i]
-            decryptedText = decryptedText.replace(newChar, ".")
-            tmp = oldChar
-            decryptedText = decryptedText.replace(oldChar, newChar)
-            decryptedText = decryptedText.replace(".", tmp)
-            i += 1
-    j += 1
+            i = 0
+            for newChar in hitWord:
+                oldChar = splittedDecryptedText[j][i]
+                decryptedText = decryptedText.replace(newChar, ".")
+                tmp = oldChar
+                decryptedText = decryptedText.replace(oldChar, newChar)
+                decryptedText = decryptedText.replace(".", tmp)
+                i += 1
+        j += 1
     #print j
-    print decryptedText
-    splittedDecryptedText = string.split(decryptedText, " ")
-    print splittedDecryptedText"""
-
+        print decryptedText
+        splittedDecryptedText = string.split(decryptedText, " ")
+        print splittedDecryptedText
+"""
 #http://www.mathe.tu-freiberg.de/~hebisch/cafe/kryptographie/bigramme.html
 #http://www.mathe.tu-freiberg.de/~hebisch/cafe/kryptographie/haeufigkeitstabellen.html

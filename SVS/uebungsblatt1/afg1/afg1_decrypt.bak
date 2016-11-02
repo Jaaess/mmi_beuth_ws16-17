@@ -1,0 +1,79 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+
+#Liest Text aus einer Datei und versucht den Text zu entschlüsseln
+
+import operator
+import string
+import enchant
+
+
+
+
+def getFrequencyOfACharInText(stringText,char):
+    count = stringText.count(char)
+    #return "Char: %c = %i " % (char, count)
+    return count
+
+fobj = open("encryptedText.txt")
+cryptedText = ""
+for line in fobj:
+    cryptedText += line.rstrip()
+fobj.close()
+
+abc = [chr(a+97) for a in range(26)] + [" "]
+
+# Entschlüsslungspart
+# Anzahl der der Häufigkeit der einzelnen Zeichen im legalem Zeichensatz ermitteln
+i = 0
+countLetter = abc[:]
+for letter in abc:
+    countLetter[i] = getFrequencyOfACharInText(cryptedText, letter)
+    i += 1
+#Beziegung zwischen Buchstabe und Häufigkeit setzen
+countAbc = dict(zip(abc, countLetter))
+
+#Liste absteigend sortieren
+sortedCountAbc = sorted(countAbc.items(), key=operator.itemgetter(1))
+sortedCountAbc.reverse()
+print sortedCountAbc
+
+#absteigende Reihenfolge mit legale Zeichensatz(englisch)
+aCountLetterEn = [" "]
+countLetterEn = "etaoinshrdlcumwfgypbvkjxqz"
+#countLetterEn = "et"
+for item in countLetterEn:
+    aCountLetterEn.append(item)
+#print aCountLetterEn
+
+#nur die Buchstaben aus der Liste mit haeufigsten Zeichen im Text rausziehen
+tmp = []
+for item in sortedCountAbc:
+    tmp.append(item[0][0])
+
+#Beziehung zwischen Häufigkeit im Text und Häufigkeit der Buchstaben im englsichen Sprachraum
+#herstellen
+cb = dict(zip(tmp, aCountLetterEn))
+
+#1. Versuch verschlüsselten Text zu entschlüssln
+#Buchstabenersetzung
+decryptedText = ""
+for ch in cryptedText:
+    decryptedText = decryptedText+cb[ch]
+
+print decryptedText
+
+#Entschlüsselung Part2
+splittedDecryptedText = string.split(decryptedText, " ");
+print splittedDecryptedText
+
+#zählt die Buchstaben pro Wort
+countLetterPerWord = []
+for word in splittedDecryptedText:
+    countLetterPerWord.append(len(word))
+
+print countLetterPerWord
+
+
+#http://www.mathe.tu-freiberg.de/~hebisch/cafe/kryptographie/bigramme.html
+#http://www.mathe.tu-freiberg.de/~hebisch/cafe/kryptographie/haeufigkeitstabellen.html
