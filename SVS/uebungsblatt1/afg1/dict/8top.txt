@@ -374,6 +374,7 @@ attended
 priority
 accurate
 operated
+emotions
 directed
 collapse
 demanded
@@ -827,6 +828,7 @@ colleges
 generous
 homeland
 receipts
+eclipses
 africa's
 develops
 throwing

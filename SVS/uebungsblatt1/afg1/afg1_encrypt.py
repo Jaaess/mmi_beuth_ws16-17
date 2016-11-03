@@ -14,7 +14,7 @@ def removeIllegalChars(realText,abc):
     return newRealText
 
 #Legalen Zeichensatz erstellen
-#abc = [chr(a+97) for a in range(26)] + [chr(b+65) for b in range(26)] + [' ']
+#legalChars = [chr(a+97) for a in range(26)] + [chr(b+65) for b in range(26)] + [' ']
 abc = [chr(a+97) for a in range(26)] + [" "]
 
 #legalen Zeichensatz kopieren und durcheinander wÃ¼rfeln

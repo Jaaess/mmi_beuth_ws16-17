@@ -44,7 +44,7 @@ countLetterEn = "etaoinshrdlcumwfgypbvkjxqz"
 #countLetterEn = "et"
 for item in countLetterEn:
     aCountLetterEn.append(item)
-#print aCountLetterEn
+#print listWithMostFrequencyLetterDesc
 
 #nur die Buchstaben aus der Liste mit haeufigsten Zeichen im Text rausziehen
 tmp = []
