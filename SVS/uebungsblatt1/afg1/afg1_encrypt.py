@@ -25,7 +25,7 @@ random.shuffle(shuffled_abc)
 wb = dict(zip(abc, shuffled_abc))
 
 #Orginaltext aus Datei lesen
-fobj = open("plainText1.txt")
+fobj = open("plainText2.txt")
 getText = ""
 for line in fobj:
     getText += line.rstrip()

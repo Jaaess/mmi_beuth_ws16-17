@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 
+# Lösung von Steffen Burlefinger und Stephan Wagner
+
 #Liest Text aus einer Datei und versucht den Text zu entschlüsseln
 
 import operator
@@ -50,12 +52,13 @@ for letter in legalChars:
     countLetter[i] = getFrequencyOfACharInText(cryptedText, letter)
     i += 1
 
-#Beziegung zwischen Buchstabe und Häufigkeit setzen
+#Beziehung zwischen Buchstabe und Häufigkeit setzen
 legalCharsWithFrequency = dict(zip(legalChars, countLetter))
 
 #Liste absteigend sortieren
 sortedLegalCharsWithFrequency = sorted(legalCharsWithFrequency.items(), key=operator.itemgetter(1))
 sortedLegalCharsWithFrequency.reverse()
+print sortedLegalCharsWithFrequency
 
 #absteigende Reihenfolge mit legale Zeichensatz(englisch)
 listWithMostFrequencyLetterDesc = [" "]
@@ -124,7 +127,12 @@ replaceWords(foundNewWord[0][0], "which", decryptedText)
 
 splittedDecryptedText = string.split(decryptedText, " ")
 
+print decryptedText
+
+foundChars = [' ', 'e', 't', 'h', 'w', 'a', 'o', 'f', 'i']
+
 stopper = 0
+notFoundWords = []
 for x in range(0, len(splittedDecryptedText)):
     token = splittedDecryptedText[x]
     lenToken = len(token)
@@ -136,6 +144,9 @@ for x in range(0, len(splittedDecryptedText)):
             dictWord = line.rstrip()
             if set(dictWord) == set(token):
                 foundWords = []
+                for letter in token:
+                    foundChars.append(letter)
+                foundChars = list(set(foundChars))
                 break
             if dictWord != token:
                 i = 0
@@ -146,25 +157,33 @@ for x in range(0, len(splittedDecryptedText)):
                     i += 1
                 if count >= maxCharsForAccord:
                     foundWords.append(dictWord)
+        tmp = []
+        for word in foundWords:
+            for letter in word:
+                matching = letter not in foundChars
+                if matching:
+                    tmp.append(word)
+                    break
+        foundWords = tmp
         if len(foundWords) == 1:
             decryptedText = replaceWords(token, foundWords[0], decryptedText)
-
+            for letter in foundWords[0]:
+                foundChars.append(letter)
+            foundChars = list(set(foundChars))
         fobj.close()
     splittedDecryptedText = string.split(decryptedText, " ")
     stopper += 1
     if stopper == 50:
         break
 
+print foundChars
 print cryptedText
 print decryptedText
 
-fobj = open("plainText1.txt")
+fobj = open("plainText2.txt")
 plainText = ""
 for line in fobj:
     plainText += line.rstrip()
 fobj.close()
 
 print plainText
-
-
-
