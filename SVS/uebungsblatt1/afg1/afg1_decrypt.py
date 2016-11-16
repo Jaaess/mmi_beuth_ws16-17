@@ -8,6 +8,8 @@
 import operator
 import string
 from collections import defaultdict
+import enchant
+
 
 #Ermittlung der Häufigkeit eines Zeichens im Text
 def getFrequencyOfACharInText(stringText,char):
@@ -18,6 +20,7 @@ def getFrequencyOfACharInText(stringText,char):
 #werden auch im gesamten Text geändert
 def replaceWords(encryptedWord, newWord, decryptedText):
     i = 0
+    #switchedChar = []
     for oldChar in encryptedWord:
         if oldChar != newWord[i]:
             decryptedText = decryptedText.replace(newWord[i], ".")
@@ -34,12 +37,25 @@ def detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, countOfChars):
             count[c] += 1
     return count
 
+def getWordsWithUnknownLetter(text, listWithWithKnownLetters):
+    #Wörter in Liste schreiben die noch unbekannte Buchstaben besitzen
+    splittedDecryptedText = string.split(decryptedText, " ");
+    wordsWithUnknownLetters = [];
+    for token in splittedDecryptedText:
+        for char in token:
+            if char not in foundChars:
+                wordsWithUnknownLetters.append(token)
+    wordsWithUnknownLetters = sorted(list(set(wordsWithUnknownLetters)))
+    return wordsWithUnknownLetters
+
 #Liest verschlüsselten Text aus Datei
 fobj = open("encryptedText.txt")
 cryptedText = ""
 for line in fobj:
     cryptedText += line.rstrip()
 fobj.close()
+print "Ausgabe des verschüsselten Textes:"
+print cryptedText
 
 #Erstellt Liste mit legalen Zeichen
 legalChars = [chr(a + 97) for a in range(26)] + [" "]
@@ -58,6 +74,7 @@ legalCharsWithFrequency = dict(zip(legalChars, countLetter))
 #Liste absteigend sortieren
 sortedLegalCharsWithFrequency = sorted(legalCharsWithFrequency.items(), key=operator.itemgetter(1))
 sortedLegalCharsWithFrequency.reverse()
+print "\nHäufgikeit der Buchstaben im verschlüsselten Text:"
 print sortedLegalCharsWithFrequency
 
 #absteigende Reihenfolge mit legale Zeichensatz(englisch)
@@ -82,7 +99,8 @@ for ch in cryptedText:
     decryptedText = decryptedText + codeBook[ch]
 
 splittedDecryptedText = string.split(decryptedText, " ")
-
+print "\nAusgabe nach analyse und Austausch der Buchstaben:"
+print decryptedText
 
 #Ermittlung der Häufigkeit Wörter mit EINEM Zeichen
 detectedWords= detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, 1)
@@ -99,40 +117,37 @@ if len(foundNewWord) == 2:
                 decryptedText = decryptedText.replace(oldChar, oneLetterWords[i])
                 decryptedText = decryptedText.replace(".", exctractedCharsFromList)
         i += 1
+print "\nAusgabe nach ein- und ersetzen von Wörtern mit der Buchstabenlänge von eins:"
+print decryptedText
 
 #Häufigstes Wort mit 2 Buchstaben ermitteln und ersetzen
 detectedWords = detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, 2)
 foundNewWord = sorted(detectedWords.items(), key=operator.itemgetter(1))
 foundNewWord.reverse()
 decryptedText = replaceWords(foundNewWord[0][0], "of", decryptedText)
+print "\nAusgabe nach ein- und ersetzen von Wörtern mit der Buchstabenlänge von zwei:"
+print decryptedText
 
 #Häufigstes Wort mit 3 Buchstaben ermitteln und ersetzen
 detectedWords = detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, 3)
 foundNewWord = sorted(detectedWords.items(), key=operator.itemgetter(1))
 foundNewWord.reverse()
 decryptedText = replaceWords(foundNewWord[0][0], "the", decryptedText)
-
+print "\nAusgabe nach ein- und ersetzen von Wörtern mit der Buchstabenlänge von drei:"
+print decryptedText
 
 #Häufigstes Wort mit 4 Buchstaben ermitteln und ersetzen
 detectedWords = detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, 4)
 foundNewWord = sorted(detectedWords.items(), key=operator.itemgetter(1))
 foundNewWord.reverse()
 replaceWords(foundNewWord[0][0], "that", decryptedText)
-
-#Häufigstes Wort mit 5 Buchstaben ermitteln
-detectedWords = detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, 5)
-foundNewWord = sorted(detectedWords.items(), key=operator.itemgetter(1))
-foundNewWord.reverse()
-replaceWords(foundNewWord[0][0], "which", decryptedText)
-
-splittedDecryptedText = string.split(decryptedText, " ")
-
+print "\nAusgabe nach ein- und ersetzen von Wörtern mit der Buchstabenlänge von vier:"
 print decryptedText
 
+splittedDecryptedText = string.split(decryptedText, " ")
 foundChars = [' ', 'e', 't', 'h', 'w', 'a', 'o', 'f', 'i']
 
 stopper = 0
-notFoundWords = []
 for x in range(0, len(splittedDecryptedText)):
     token = splittedDecryptedText[x]
     lenToken = len(token)
@@ -144,9 +159,6 @@ for x in range(0, len(splittedDecryptedText)):
             dictWord = line.rstrip()
             if set(dictWord) == set(token):
                 foundWords = []
-                for letter in token:
-                    foundChars.append(letter)
-                foundChars = list(set(foundChars))
                 break
             if dictWord != token:
                 i = 0
@@ -176,14 +188,61 @@ for x in range(0, len(splittedDecryptedText)):
     if stopper == 50:
         break
 
-print foundChars
-print cryptedText
+print "\nAusgabe nach Wörterbuch-Check:"
 print decryptedText
 
-fobj = open("plainText2.txt")
+
+print "\nAusgabe nach PyEnchant - Check: "
+wordsWithUnknownLetter = getWordsWithUnknownLetter(decryptedText, foundChars)
+enchantUS = enchant.Dict("en_US")
+
+removeWords = []
+for token in wordsWithUnknownLetter:
+    enchantResult = enchantUS.suggest(token)
+    for result in enchantResult:
+        if str.lower(result) == token:
+            for letter in token:
+                if letter not in foundChars:
+                    foundChars.append(letter)
+            removeWords.append(token)
+            continue
+for word in removeWords:
+    if word in wordsWithUnknownLetter:
+        wordsWithUnknownLetter.remove(word)
+
+wordsWithUnknownLetter = getWordsWithUnknownLetter(decryptedText, foundChars)
+print wordsWithUnknownLetter
+print foundChars
+print len(foundChars)
+finished = False
+while finished == False:
+    enchantResult = enchantUS.suggest(wordsWithUnknownLetter[0])
+    for result in enchantResult:
+        if len(wordsWithUnknownLetter) > 0:
+            if len(result) == len(wordsWithUnknownLetter[0]):
+                for letter in str.lower(result):
+                    if letter not in foundChars:
+                        foundChars.append(letter)
+                        index = decryptedText.find(letter)
+                        decryptedText = replaceWords(wordsWithUnknownLetter[0], result, decryptedText)
+                        foundChars.append(decryptedText[index])
+                        wordsWithUnknownLetter = getWordsWithUnknownLetter(decryptedText, foundChars)
+                        if len(wordsWithUnknownLetter) == 0:
+                            finished = True
+
+print decryptedText
+
+
+fobj = open("plainText1.txt")
 plainText = ""
 for line in fobj:
     plainText += line.rstrip()
 fobj.close()
 
+#print foundChars
+#print len(foundChars)
+#print cryptedText
+#print wordsWithUnknownLetter
+
+print "\nORIGINAL-TEXT:"
 print plainText
