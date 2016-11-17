@@ -30,6 +30,8 @@ def replaceWords(encryptedWord, newWord, decryptedText):
         i += 1
     return decryptedText
 
+#Analysiert wieviel Wörter es mit einer bestimmten Anzahl von Buchstaben existieren
+#und gibt das Ergebnis zurück
 def detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, countOfChars):
     count = defaultdict(int)
     for c in decryptedText.split():
@@ -37,8 +39,9 @@ def detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, countOfChars):
             count[c] += 1
     return count
 
+
+# Wörter eine Liste schreiben die noch unbekannte Buchstaben besitzen
 def getWordsWithUnknownLetter(text, listWithWithKnownLetters):
-    #Wörter in Liste schreiben die noch unbekannte Buchstaben besitzen
     splittedDecryptedText = string.split(decryptedText, " ");
     wordsWithUnknownLetters = [];
     for token in splittedDecryptedText:
@@ -88,8 +91,7 @@ exctractedCharsFromList = []
 for item in sortedLegalCharsWithFrequency:
     exctractedCharsFromList.append(item[0][0])
 
-#Beziehung zwischen Häufigkeit im Text und Häufigkeit der Buchstaben im englsichen Sprachraum
-#herstellen
+#Beziehung zwischen Häufigkeit im Text und Häufigkeit der Buchstaben im englsichen Sprachraum herstellen
 codeBook = dict(zip(exctractedCharsFromList, listWithMostFrequencyLetterDesc))
 
 #1. Versuch verschlüsselten Text zu entschlüssln
@@ -99,7 +101,7 @@ for ch in cryptedText:
     decryptedText = decryptedText + codeBook[ch]
 
 splittedDecryptedText = string.split(decryptedText, " ")
-print "\nAusgabe nach analyse und Austausch der Buchstaben:"
+print "\nAusgabe nach Analyse und Austausch der Buchstaben:"
 print decryptedText
 
 #Ermittlung der Häufigkeit Wörter mit EINEM Zeichen
@@ -192,10 +194,11 @@ print "\nAusgabe nach Wörterbuch-Check:"
 print decryptedText
 
 
-print "\nAusgabe nach PyEnchant - Check: "
+print "\nAusgabe nach PyEnchant-Check: "
 wordsWithUnknownLetter = getWordsWithUnknownLetter(decryptedText, foundChars)
 enchantUS = enchant.Dict("en_US")
 
+#Alle Wörter rausschmeissen von den alle befindlichen Buchstaben bekannt sind
 removeWords = []
 for token in wordsWithUnknownLetter:
     enchantResult = enchantUS.suggest(token)
@@ -211,36 +214,44 @@ for word in removeWords:
         wordsWithUnknownLetter.remove(word)
 
 wordsWithUnknownLetter = getWordsWithUnknownLetter(decryptedText, foundChars)
-print wordsWithUnknownLetter
-print foundChars
-print len(foundChars)
 finished = False
-while finished == False:
-    enchantResult = enchantUS.suggest(wordsWithUnknownLetter[0])
-    for result in enchantResult:
+
+#mit PyEnchant die letzten Wörter rausfinden und mit dem Text abgleichen
+if len(wordsWithUnknownLetter) > 0:
+    while finished == False:
+        enchantResult = enchantUS.suggest(wordsWithUnknownLetter[0])
+        before = wordsWithUnknownLetter[0];
+        tmpRemove = []
+        for result in enchantResult:
+            if len(wordsWithUnknownLetter) > 0:
+                if len(result) == len(wordsWithUnknownLetter[0]):
+                    for letter in str.lower(result):
+                        if letter not in foundChars:
+                            foundChars.append(letter)
+                            index = decryptedText.find(letter)
+                            tmpDecryptedText = replaceWords(wordsWithUnknownLetter[0], result, decryptedText)
+                            decryptedText[index]
+                            if tmpDecryptedText[index] not in foundChars:
+                                foundChars.append(decryptedText[index])
+                                decryptedText = tmpDecryptedText
+                                wordsWithUnknownLetter = getWordsWithUnknownLetter(decryptedText, foundChars)
+                            if len(wordsWithUnknownLetter) == 0:
+                                finished = True
         if len(wordsWithUnknownLetter) > 0:
-            if len(result) == len(wordsWithUnknownLetter[0]):
-                for letter in str.lower(result):
-                    if letter not in foundChars:
-                        foundChars.append(letter)
-                        index = decryptedText.find(letter)
-                        decryptedText = replaceWords(wordsWithUnknownLetter[0], result, decryptedText)
-                        foundChars.append(decryptedText[index])
-                        wordsWithUnknownLetter = getWordsWithUnknownLetter(decryptedText, foundChars)
-                        if len(wordsWithUnknownLetter) == 0:
-                            finished = True
+            if before == wordsWithUnknownLetter[0]:
+                tmpRemove.append(wordsWithUnknownLetter[0])
+                wordsWithUnknownLetter.remove(wordsWithUnknownLetter[0])
+                if len(wordsWithUnknownLetter) == 0:
+                    finished = True
 
 print decryptedText
 
-
-fobj = open("plainText1.txt")
+fobj = open("plainText2.txt")
 plainText = ""
 for line in fobj:
     plainText += line.rstrip()
 fobj.close()
 
-#print foundChars
-#print len(foundChars)
 #print cryptedText
 #print wordsWithUnknownLetter
 
