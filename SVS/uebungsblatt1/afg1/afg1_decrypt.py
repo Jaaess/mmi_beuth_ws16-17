@@ -254,8 +254,5 @@ for line in fobj:
     plainText += line.rstrip()
 fobj.close()
 
-#print cryptedText
-#print wordsWithUnknownLetter
-
 print "\nORIGINAL-TEXT:"
 print plainText
