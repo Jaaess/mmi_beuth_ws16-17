@@ -105,7 +105,7 @@ print "\nAusgabe nach Analyse und Austausch der Buchstaben:"
 print decryptedText
 
 #Ermittlung der Häufigkeit Wörter mit EINEM Zeichen
-detectedWords= detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, 1)
+detectedWords = detectFrequencyofWordsWithGivenCountOfAChars(decryptedText, 1)
 foundNewWord = sorted(detectedWords.items(), key=operator.itemgetter(1))
 if len(foundNewWord) == 2:
     oneLetterWords = "ia"
@@ -149,6 +149,9 @@ print decryptedText
 splittedDecryptedText = string.split(decryptedText, " ")
 foundChars = [' ', 'e', 't', 'h', 'w', 'a', 'o', 'f', 'i']
 
+
+#Lokales Wörterbuchcheck
+print "\nAusgabe nach Wörterbuch-Check:"
 stopper = 0
 for x in range(0, len(splittedDecryptedText)):
     token = splittedDecryptedText[x]
@@ -190,7 +193,6 @@ for x in range(0, len(splittedDecryptedText)):
     if stopper == 50:
         break
 
-print "\nAusgabe nach Wörterbuch-Check:"
 print decryptedText
 
 
