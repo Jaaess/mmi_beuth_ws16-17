@@ -63,8 +63,8 @@ def decode(hexcode):
         return None
 
 #Schreiben in Bild-Datei
-def writeTxtInImage(filename, message):
-    img = Image.open(filename)
+def writeTxtInImage(imgFilename, message):
+    img = Image.open(imgFilename)
     binary = stringToBinary(message) + '1111111111111110'
     if img.mode in ('RGBA'):
         img = img.convert('RGBA')
@@ -85,8 +85,7 @@ def writeTxtInImage(filename, message):
                 newData.append(item)
 
         img.putdata(newData)
-
-        img.save(filename + ".ste", "PNG")
+        img.save(imgFilename + ".sae", "PNG")
         return True
 
     return False
@@ -94,7 +93,7 @@ def writeTxtInImage(filename, message):
 
 #Lesen aus Bild-Datei
 def readTxtFromImage(filename):
-    img = Image.open(filename + ".ste")
+    img = Image.open(filename + ".sae")
     binary = ''
 
     if img.mode in ('RGBA'):
@@ -112,25 +111,6 @@ def readTxtFromImage(filename):
 
         return binaryToString(binary)
     return False
-
-#Auf Anzahl der Parameter prüfen
-if len(sys.argv) != 3:
-    sys.exit('Wrong count of parameters. We need two parameters - example: steganohide.py text.txt bild.bmp')
-
-txtFilename = sys.argv[1]
-imgFilename = sys.argv[2]
-
-#Auf Existenz prüfen, falls erforgreich dann weiter
-if checkFileExistence(txtFilename, imgFilename):
-    if writeTxtInImage(imgFilename, readTxtFile(txtFilename)):
-        print 'Write text in image was successfull!'
-        if readTxtFromImage(imgFilename) != False:
-            print readTxtFromImage(imgFilename)
-        else:
-            sys.exit('ERROR! Read text in image failed!')
-    else:
-        sys.exit('ERROR! Write text in image failed!')
-
 
 # Let suppose an image has a size of 1200 * 800 pixel than 1200 x 800= 960,000 pixel
 # so for 24-bit scheme that contain 3 bytes it would become 960,000 x 3 =28,80000 bytes and 1 byte consist of 8 bits so 2880000 x 8 = 23040000 bits
