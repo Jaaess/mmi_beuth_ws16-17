@@ -59,17 +59,6 @@ def encryptMsg(mac, pw, txt):
 
     return encryptedData
 
-def xteaDecrypt(key, block, n=32, endian="!"):
-    v0, v1 = struct.unpack(endian+"2L", block)
-    k = struct.unpack(endian+"4L", key)
-    delta, mask = 0x9e3779b9L, 0xffffffffL
-    sum = (delta * n) & mask
-    for round in range(n):
-        v1 = (v1 - (((v0 << 4 ^ v0 >> 5) + v0) ^ (sum + k[sum >> 11 & 3]))) & mask
-        sum = (sum - delta) & mask
-        v0 = (v0 - (((v1 << 4 ^ v1 >> 5) + v1) ^ (sum + k[sum & 3]))) & mask
-    return struct.pack(endian+"2L", v0, v1)
-
 def decryptMsg(mac, pw, imgFilename):
     macSHA256 = hashlib.sha256(mac).digest()
     hashedPW = hashlib.sha256(pw).digest()
