@@ -111,6 +111,3 @@ def readTxtFromImage(filename):
 
         return binaryToString(binary)
     return False
-
-# Let suppose an image has a size of 1200 * 800 pixel than 1200 x 800= 960,000 pixel
-# so for 24-bit scheme that contain 3 bytes it would become 960,000 x 3 =28,80000 bytes and 1 byte consist of 8 bits so 2880000 x 8 = 23040000 bits
