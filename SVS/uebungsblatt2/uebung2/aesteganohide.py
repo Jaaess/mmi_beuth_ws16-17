@@ -7,8 +7,9 @@ import hashlib
 import hmac
 import os
 import binascii
-import random
 import xtea
+import string
+import random
 
 def encryptMsg(mac, pw, txt):
 
@@ -46,7 +47,11 @@ def decryptMsg(mac, pw, imgFilename):
         return False
 
 def randomIV():
-    return binascii.b2a_hex(os.urandom(4))
+    chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    result = ''
+    for i in range(8):
+        result += random.choice(chars)
+    return result
 
 #Auf Anzahl der Parameter prüfen
 if (not len(sys.argv) == 7) and (not len(sys.argv) == 8):
